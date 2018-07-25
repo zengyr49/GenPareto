@@ -15,9 +15,11 @@ import PSOptim
 class adtest_for_gpd:
     __doc__ = "this class is for calculating Anderson Darling Test for General Pareto Distribution"
 
-    def __init__(self,X,x0):
+    def __init__(self,X,x0,pValThres=0.05,OptMethod="pso"):
         self.X = np.array(sorted(X))
         self.x0 = x0
+        self.pValThres = pValThres
+        self.OptMethod = OptMethod
 
     def lenX(self):
         try:
@@ -28,10 +30,12 @@ class adtest_for_gpd:
     def est_k_s(self,threshold):
         #0 idx is shape, or -k
         #2 idx is scale, or a or sigma
-        # version of GradientDescent
-        # theta = GradientDescent.GradientDescent(X=self.X,step=0.0001,acc=10e-06,maxIter=1000,showdetail=False,threshold=threshold)
-        # version of PSO
-        theta = PSOptim.OptByPSO(X=self.X,threshold=threshold) # if we use this, we need to install pyswarm package or put its code in the same filedir
+        if self.OptMethod == "gd":
+            # version of GradientDescent
+            theta = GradientDescent.GradientDescent(X=self.X,step=0.0001,acc=10e-06,maxIter=1000,showdetail=False,threshold=threshold)
+        elif self.OptMethod == "pso":
+            # version of PSO
+            theta = PSOptim.OptByPSO(X=self.X,threshold=threshold) # if we use this, we need to install pyswarm package or put its code in the same filedir
         shape = np.sum(np.log(1 - theta * self.X)) / self.lenX()
         scale = -1 * shape / theta
         return (shape,scale)
@@ -109,6 +113,9 @@ class adtest_for_gpd:
             return -1*n-sum_part/n
 
     def p_val_record(self,Asqr):
+        # ref http://www.statisticshowto.com/anderson-darling-test/
+        # or more exactly this paper:
+        # https://www.jstor.org/stable/1165059?seq=1#page_scan_tab_contents
         if Asqr >= 0.6:
             pval = math.exp(1.2937-5.709*Asqr+0.0186*Asqr*Asqr)
         elif Asqr <0.6 and Asqr > 0.34:
@@ -118,7 +125,7 @@ class adtest_for_gpd:
         elif Asqr <= 0.2:
             pval = 1-math.exp(-13.436+101.14*Asqr-223.73*Asqr*Asqr)
 
-        if pval>0.05:
+        if pval>self.pValThres:
             return "fit_good_enough"
         else:
             return "Not_good_enough"

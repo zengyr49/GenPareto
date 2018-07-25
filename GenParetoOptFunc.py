@@ -9,7 +9,8 @@ import numpy as np
 
 class GenParetoOptFunc:
     __doc__ = "Changed formula to be optimize. To optimize G(theta) for calculating the shape and scale of " \
-              "Generalized Pareto Distribution"
+              "Generalized Pareto Distribution. This function is minimized by Gradient Descent or PSO." \
+              "reference:'A new hybrid estimation method for the generalized pareto distribution' by Chunlin Wang & Gemai Chen"
 
     def __init__(self,X,theta,threshold=0):
         # X is the input data, no matter you sorted or pick the exceedance
