@@ -66,15 +66,23 @@ LessPermutation <- function(X, x0, fitting.method="mle",search.step=0.01,fit.cut
       return(fitgpd(X, thres, fitting.method, stat="ADR")$param);
     }else if (fitting.method=="gd"){
       theta <- GradientDescent(X)
-      k <- -1 * k_hyb(theta,X)
+      print("theta is")
+      print(theta)
+      # k <- -1 * k_hyb(theta,X)
+      k <- k_hyb(theta,X)
       s <- sigma_hyb(k,theta)
+      print("KS IS")
+      print(k)
+      print(s)
       output<-matrix(c(k,s),nrow = 1,ncol = 2)
       output <- as.data.frame(output)
       colnames(output) <- c("shape","scale")
+      print(output)
       return(output)
     }else if (fitting.method=="pso"){
       theta <- PSOptTheta(X)
-      k <- -1 * k_hyb(theta,X)
+      # k <- -1 * k_hyb(theta,X)
+      k <- k_hyb(theta,X)
       s <- sigma_hyb(k,theta)
       output<-matrix(c(k,s),nrow = 1,ncol = 2)
       output <- as.data.frame(output)
@@ -96,10 +104,13 @@ LessPermutation <- function(X, x0, fitting.method="mle",search.step=0.01,fit.cut
   #Make a list of F(z) for AD Test
   adtestGPD.MakeZ <- function(X,thres, k, s) {
     union.Z <- OverThres(X,thres)
+    print("thres is")
+    print(thres)
+    print(union.Z)
     # k <- as.numeric(EstKS["shape"]) * -1
     # s <- as.numeric(EstKS["scale"])
     z <- union.Z - thres
-    if (s <= 1e-18) {
+    if (s < 1e-18) {
       s <- 1e-18
     }
     if (k == 0) {
@@ -111,6 +122,8 @@ LessPermutation <- function(X, x0, fitting.method="mle",search.step=0.01,fit.cut
   
   #calculate A^2, which is the estimator of AD Test
   adtestGPD.Asqr <- function(zlist) {
+    print("zlist")
+    print(zlist)
     n <- length(zlist)
     sum.asqr <- 0
     Record.Union <- c(1:n)
@@ -119,6 +132,8 @@ LessPermutation <- function(X, x0, fitting.method="mle",search.step=0.01,fit.cut
       # right <- (2 * n + 1 - 2 * idx) * log(1 - zlist[idx]) # actually it is the same as the downside one
       right <- (2 * idx - 1) * log(1-zlist[n+1-idx])
       total <- left + right
+      print("total is")
+      print(total)
       sum.asqr <- sum.asqr + total
     }
     # adjust A^2 if sample is too small
@@ -145,9 +160,10 @@ LessPermutation <- function(X, x0, fitting.method="mle",search.step=0.01,fit.cut
     } else if (Asqr <= 0.2) {
       pval <- 1 - exp(-13.436 + 101.14 * Asqr - 223.73 * Asqr ** 2);
     }
-    # print(pval)
-    # print(Asqr)
+    print("pval and asqr")
     print(pval)
+    print(Asqr)
+    
     if (pval > fit.cutoff) {
       return("fit_good_enough");
     } else {
