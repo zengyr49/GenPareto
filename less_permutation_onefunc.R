@@ -147,6 +147,7 @@ LessPermutation <- function(X, x0, fitting.method="mle",search.step=0.01,fit.cut
     }
     # print(pval)
     # print(Asqr)
+    print(pval)
     if (pval > fit.cutoff) {
       return("fit_good_enough");
     } else {
