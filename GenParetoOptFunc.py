@@ -81,7 +81,7 @@ class GenParetoOptFunc:
         n = self.lenX()
         gip1 = self.gprai_p1(idx=idx,sumpow=sumpow)
         gip2 = self.gprai_p2(idx=idx,sumlog=sumlog)
-        gip3 = self.gprai_p3(idx=idx,sumlog=sumlog)
+        gip3 = self.gprai_p3(idx=idx,sumlog=sumlog,sum_gprai_p3=sum_gprai_p3)
         giprai = self.gprai(p1=gip1,p2=gip2,p3=gip3)
         gi = self.g(idx=idx,sumpow=sumpow)
         one = (2 * (idx + 1) - 1) * giprai / gi
